@@ -64,11 +64,7 @@ const HomePage = () => {
           <p className="lead mb-4" data-aos="fade-up" data-aos-delay="200">
             We are team of talented designers making websites with Bootstrap
           </p>
-          <div data-aos="fade-up" data-aos-delay="300">
-            <a href="#get-started" className="btn btn-primary btn-lg">
-              Get Started
-            </a>
-          </div>
+
         </div>
       </section>
 
@@ -148,19 +144,14 @@ const HomePage = () => {
       </Container>
       <div className="text-center py-5">
         <Link
-          to="/polls"
+          to="/poll-list"
           className="btn btn-outline-success px-4 py-2 rounded-pill d-inline-flex align-items-center"
         >
           <span className="me-2">Xem thêm</span>
           <i className="bi bi-arrow-right-circle"></i>
         </Link>
       </div>
-      <Container className="py-5">
-        <h2 className="mb-4">Danh sách bình chọn</h2>
-        <PollListSections data={mockData} />
-      </Container>
 
-      <CandidateSection />
     </>
   );
 }

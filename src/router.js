@@ -9,29 +9,43 @@ import AddPollPage from "./pages/admin/addPollPage";
 import AdminHomePage from './pages/admin/homePage';
 import LoginPage from "./pages/auth/login";
 import RegisterPage from "./pages/auth/register";
+import PollDetailPage from "./pages/users/pollDetailPage";
+import PollListPage from "./pages/users/pollListPage";
 
 const renderUserRouter = () => {
     const userRouters = [
         {
             path: ROUTERS.USER.HOME,
             component: <UserHomePage />,
-            role: "ROLE_USER"
+            role: "USER"
         },
+
         {
             path: ROUTERS.USER.PROFILE,
             component: <ProfilePage />,
-            role: "ROLE_USER"
+            role: "USER"
+        },
+        {
+            path: ROUTERS.USER.POLLLIST,
+            component: <PollListPage />,
+            role: "USER"
+        },
+        {
+            path: ROUTERS.USER.POLLDETAIL,
+            component: <PollDetailPage />,
+            role: "USER"
         },
         {
             path: ROUTERS.ADMIN.ADDPOLL,
             component: <AddPollPage />,
-            role: "ROLE_ADMIN"
+            role: "ADMIN"
         },
         {
             path: ROUTERS.ADMIN.HOME,
             component: <AdminHomePage />,
-            role: "ROLE_ADMIN"
+            role: "ADMIN"
         },
+
         {
             path: ROUTERS.AUTH.LOGIN,
             component: <LoginPage />,
@@ -42,7 +56,6 @@ const renderUserRouter = () => {
             component: <RegisterPage />,
             role: "PUBLIC" // không cần login
         }
-
     ];
 
     const renderLayout = (role, component) => {
@@ -54,7 +67,7 @@ const renderUserRouter = () => {
         if (role === "PUBLIC") {
             return component;
         }
-        if (role === "ROLE_ADMIN") {
+        if (role === "ADMIN") {
             return <AdminMasterLayout>{wrappedComponent}</AdminMasterLayout>;
         }
 

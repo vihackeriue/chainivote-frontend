@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import Header from './header';
-import Footer from './footer';
+
 import Menu from './navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 

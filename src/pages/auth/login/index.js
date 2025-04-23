@@ -1,8 +1,45 @@
-import React from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import './style.css'; // (nếu bạn muốn thêm CSS tùy chỉnh)
+import React, { useState } from 'react';
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import './style.css';
+import { Login } from '../../../service/authService';
+import { getUserRole } from '../../../utils/jwt';
+
 
 const LoginPage = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+
+        try {
+            const response = await Login({
+                username,
+                password
+            });
+
+            const { accessToken } = response;
+
+            // Lưu token và thông tin vào localStorage hoặc context
+            localStorage.setItem('token', accessToken);
+
+            // Điều hướng tuỳ theo vai trò
+            const role = getUserRole();
+            if (role === 'ADMIN') {
+                navigate('/manager/home');
+            } else {
+                navigate('/');
+            }
+        } catch (err) {
+            console.log(err)
+            setError('Đăng nhập thất bại. Vui lòng kiểm tra thông tin.');
+        }
+    };
+
     return (
         <div className="login-page vh-100 vw-100 d-flex align-items-center justify-content-center m-0 p-0">
             <Container fluid className="g-0">
@@ -17,17 +54,27 @@ const LoginPage = () => {
                             </p>
                         </div>
 
-                        <Form>
-                            <Form.Group className="mb-3" controlId="formEmail">
+                        {error && <Alert variant="danger">{error}</Alert>}
+
+                        <Form onSubmit={handleSubmit}>
+                            <Form.Group className="mb-3" controlId="formUsername">
                                 <Form.Label>Tên đăng nhập</Form.Label>
-                                <Form.Control type="text" placeholder="Nhập tên đăng nhập" />
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Nhập tên đăng nhập"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
                             </Form.Group>
 
                             <Form.Group className="mb-3" controlId="formPassword">
-                                <Form.Label>
-                                    mật khẩu
-                                </Form.Label>
-                                <Form.Control type="password" placeholder="Nhập mật khẩu" />
+                                <Form.Label>Mật khẩu</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    placeholder="Nhập mật khẩu"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
                             </Form.Group>
 
                             <Form.Check className="mb-3" type="checkbox" label="Remember me" />
@@ -46,13 +93,12 @@ const LoginPage = () => {
                                 <i className="bi bi-github fs-4"></i>
                             </div>
                         </div>
-                        <div >
+                        <div>
                             <a href="#" className="float-end small">Quên mật khẩu?</a>
                         </div>
                         <div className="text-center mt-4">
-                            <p className="small text-muted">Bạn chưa có tài khoảnn? <a href="#">Đăng ký</a></p>
+                            <p className="small text-muted">Bạn chưa có tài khoản? <a href="/register">Đăng ký</a></p>
                         </div>
-
                     </Col>
 
                     {/* Cột phải: Ảnh + Quote */}
