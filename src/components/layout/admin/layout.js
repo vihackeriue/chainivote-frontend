@@ -16,7 +16,10 @@ const AdminMasterLayout = ({ children, ...props }) => {
             <Menu />
             <div className="flex-grow-1 d-flex flex-column" style={{ minHeight: '100vh' }}>
                 <Header />
-                <main className="p-4 bg-light flex-grow-1">
+                <main className="p-4 bg-light flex-grow-1" style={{
+                    height: 'calc(100vh - 120px)', overflowY: 'auto', scrollbarWidth: 'none',       // Firefox
+                    msOverflowStyle: 'none'
+                }}>
                     {children}
                 </main>
             </div>

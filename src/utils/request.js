@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { CgOptions } from 'react-icons/cg';
+
 
 const request = axios.create({
-    baseURL: 'http://localhost:8080/',
+    baseURL: 'http://localhost:8080/api/',
 });
 
 const get = async (path, options = {}) => {

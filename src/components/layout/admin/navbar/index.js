@@ -18,13 +18,11 @@ const Menu = () => {
             <Nav className="flex-column p-2">
                 <Nav.Link as={NavLink} to="/manager/home" eventKey="/manager/home" className="custom-nav-link">Trang chủ</Nav.Link>
                 <div className="text-uppercase text-secondary mt-3 px-2 small">Hệ thống</div>
-                <Nav.Link as={NavLink} to="/manager/add-poll" eventKey="/add-poll" className="custom-nav-link">Tạo Bình chọn</Nav.Link>
-                <Nav.Link as={NavLink} to="/" eventKey="/" className="custom-nav-link">Nguyên liệu</Nav.Link>
-                <Nav.Link as={NavLink} to="/nhap-hang" eventKey="/nhap-hang" className="text-white">Nhập hàng</Nav.Link>
-                <Nav.Link as={NavLink} to="/san-pham" eventKey="/san-pham" className="text-white">Sản phẩm</Nav.Link>
                 <Nav.Link as={NavLink} to="/danh-muc" eventKey="/danh-muc" className="text-white">Danh mục</Nav.Link>
-                <Nav.Link as={NavLink} to="/khach-hang" eventKey="/khach-hang" className="text-white">Khách hàng</Nav.Link>
-                <Nav.Link as={NavLink} to="/giam-gia" eventKey="/giam-gia" className="text-white">Mã giảm giá</Nav.Link>
+                <Nav.Link as={NavLink} to="/manager/poll-list" eventKey="/manager/poll-list" className="custom-nav-link">danh sách cuộc bình chọn</Nav.Link>
+                <Nav.Link as={NavLink} to="/manager/poll-add" eventKey="/manager/add-poll" className="custom-nav-link">Tạo Bình chọn</Nav.Link>
+                <Nav.Link as={NavLink} to="/manager/user-list" eventKey="/manager/user-list" className="text-white">Quản lý Người dùng</Nav.Link>
+                <Nav.Link as={NavLink} to="/manager/setting" eventKey="/manager/setting" className="text-white">Cài đặt hệ thống</Nav.Link>
             </Nav>
         </div>
     );

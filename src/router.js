@@ -5,12 +5,15 @@ import UserMasterLayout from "./components/layout/user/layout";
 import AdminMasterLayout from "./components/layout/admin/layout";
 import ProfilePage from "./pages/users/profilePage";
 import PrivateRoute from "./components/PrivateRoute";
-import AddPollPage from "./pages/admin/addPollPage";
 import AdminHomePage from './pages/admin/homePage';
 import LoginPage from "./pages/auth/login";
 import RegisterPage from "./pages/auth/register";
 import PollDetailPage from "./pages/users/pollDetailPage";
-import PollListPage from "./pages/users/pollListPage";
+import UserPollListPage from "./pages/users/pollListPage";
+import PollAddPage from "./pages/admin/pollAddPage";
+import AdminPollListPage from "./pages/admin/PollListPage";
+import AdminPollDetailPage from "./pages/admin/pollDetailPage";
+
 
 const renderUserRouter = () => {
     const userRouters = [
@@ -27,7 +30,7 @@ const renderUserRouter = () => {
         },
         {
             path: ROUTERS.USER.POLLLIST,
-            component: <PollListPage />,
+            component: <UserPollListPage />,
             role: "USER"
         },
         {
@@ -36,8 +39,18 @@ const renderUserRouter = () => {
             role: "USER"
         },
         {
-            path: ROUTERS.ADMIN.ADDPOLL,
-            component: <AddPollPage />,
+            path: ROUTERS.ADMIN.POLLADD,
+            component: <PollAddPage />,
+            role: "ADMIN"
+        },
+        {
+            path: ROUTERS.ADMIN.POLLLIST,
+            component: <AdminPollListPage />,
+            role: "ADMIN"
+        },
+        {
+            path: ROUTERS.ADMIN.POLLDETAIL,
+            component: <AdminPollDetailPage />,
             role: "ADMIN"
         },
         {

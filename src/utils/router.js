@@ -1,4 +1,4 @@
-import { Wallet } from "react-bootstrap-icons";
+
 
 export const ROUTERS = {
     USER: {
@@ -9,7 +9,9 @@ export const ROUTERS = {
     },
     ADMIN: {
         HOME: "manager/home",
-        ADDPOLL: "manager/add-poll",
+        POLLADD: "manager/poll-add",
+        POLLLIST: "manager/poll-list",
+        POLLDETAIL: "manager/poll-detail/:id",
     },
     AUTH: {
         LOGIN: "login",

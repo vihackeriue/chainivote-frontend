@@ -19,7 +19,7 @@ const ConnectWalletButton = () => {
 
             const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
-            const response = await fetch("http://localhost:8080/user/update-wallet", {
+            const response = await fetch("http://localhost:8080/api/user/update-wallet", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -35,7 +35,7 @@ const ConnectWalletButton = () => {
                 return;
             }
 
-            // ✅ Nếu server trả về token mới có chứa địa chỉ ví:
+            // Nếu server trả về token mới có chứa địa chỉ ví:
             if (result.accessToken) {
                 localStorage.setItem("token", result.accessToken);
                 window.dispatchEvent(new Event("storage"));

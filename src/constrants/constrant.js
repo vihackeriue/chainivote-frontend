@@ -1,4 +1,4 @@
-const contractAddress = "0x1075C07b7928Aae68bCce37DA97262fA610a7a5c";
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const contractAbi = [
     {
         "inputs": [],
@@ -6,19 +6,56 @@ const contractAbi = [
         "type": "constructor"
     },
     {
+        "anonymous": false,
         "inputs": [
             {
+                "indexed": false,
                 "internalType": "uint256",
-                "name": "_electionId",
+                "name": "pollId",
                 "type": "uint256"
             },
             {
-                "internalType": "bytes32",
-                "name": "_identityHash",
-                "type": "bytes32"
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "candidateId",
+                "type": "uint256"
             }
         ],
-        "name": "addCandidateToElection",
+        "name": "CandidateAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "pollId",
+                "type": "uint256"
+            }
+        ],
+        "name": "PollCreated",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_pollId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "_candidateIds",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "string[]",
+                "name": "_cids",
+                "type": "string[]"
+            }
+        ],
+        "name": "addCandidatesToPoll",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -39,9 +76,9 @@ const contractAbi = [
                 "type": "uint256"
             },
             {
-                "internalType": "bytes32",
-                "name": "identityHash",
-                "type": "bytes32"
+                "internalType": "string",
+                "name": "cid",
+                "type": "string"
             },
             {
                 "internalType": "uint256",
@@ -56,16 +93,21 @@ const contractAbi = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_maxVotesPerVoter",
+                "name": "_pollId",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "_durationInMinutes",
+                "name": "_maxVotesPerVoter",
                 "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "_cid",
+                "type": "string"
             }
         ],
-        "name": "createElection",
+        "name": "createPoll",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -74,50 +116,11 @@ const contractAbi = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "_pollId",
                 "type": "uint256"
             }
         ],
-        "name": "elections",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "id",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "maxVotesPerVoter",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "startTime",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "endTime",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bool",
-                "name": "exists",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_electionId",
-                "type": "uint256"
-            }
-        ],
-        "name": "getAllCandidatesInElection",
+        "name": "getAllCandidatesInPoll",
         "outputs": [
             {
                 "components": [
@@ -127,9 +130,9 @@ const contractAbi = [
                         "type": "uint256"
                     },
                     {
-                        "internalType": "bytes32",
-                        "name": "identityHash",
-                        "type": "bytes32"
+                        "internalType": "string",
+                        "name": "cid",
+                        "type": "string"
                     },
                     {
                         "internalType": "uint256",
@@ -147,7 +150,7 @@ const contractAbi = [
     },
     {
         "inputs": [],
-        "name": "getAllElections",
+        "name": "getAllPolls",
         "outputs": [
             {
                 "internalType": "uint256[]",
@@ -181,11 +184,11 @@ const contractAbi = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_electionId",
+                "name": "_pollId",
                 "type": "uint256"
             }
         ],
-        "name": "getElectionCandidates",
+        "name": "getPollCandidates",
         "outputs": [
             {
                 "internalType": "uint256[]",
@@ -200,16 +203,36 @@ const contractAbi = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_electionId",
+                "name": "_pollId",
                 "type": "uint256"
             }
         ],
-        "name": "getElectionStatus",
+        "name": "getPollResult",
         "outputs": [
             {
-                "internalType": "bool",
-                "name": "isActive",
-                "type": "bool"
+                "internalType": "uint256",
+                "name": "winnerId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "highestVoteCount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalVotes",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "candidateIds",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "voteCounts",
+                "type": "uint256[]"
             }
         ],
         "stateMutability": "view",
@@ -219,7 +242,7 @@ const contractAbi = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_electionId",
+                "name": "_pollId",
                 "type": "uint256"
             },
             {
@@ -252,7 +275,7 @@ const contractAbi = [
                 "type": "uint256"
             }
         ],
-        "name": "isCandidateInElection",
+        "name": "isCandidateInPoll",
         "outputs": [
             {
                 "internalType": "bool",
@@ -278,7 +301,7 @@ const contractAbi = [
     },
     {
         "inputs": [],
-        "name": "nextElectionId",
+        "name": "nextPollId",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -306,7 +329,41 @@ const contractAbi = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_electionId",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "polls",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "maxVotesPerVoter",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "cid",
+                "type": "string"
+            },
+            {
+                "internalType": "bool",
+                "name": "exists",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_pollId",
                 "type": "uint256"
             },
             {

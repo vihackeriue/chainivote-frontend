@@ -1,56 +1,94 @@
-import React, { memo } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import React, { memo, useEffect, useState } from 'react';
+import { Container, Row, Col, Button, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import PollCard from '../../../components/card/PollCard';
 
 
 const PollListPage = () => {
     const navigate = useNavigate();
+    const [polls, setPolls] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
 
-    const mockData = [
-        {
-            id: 1,
-            img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-            title: "Introduction to Web Design",
-            date: "Sunday, September 26th at 7:00 pm",
-            desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        },
-        {
-            id: 2,
-            img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
-            title: "Marketing Strategies",
-            date: "Sunday, November 15th at 7:00 pm",
-            desc: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium..."
-        },
-        {
-            id: 3,
-            img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-            title: "Creative Thinking",
-            date: "Sunday, December 5th at 6:00 pm",
-            desc: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam..."
-        },
-        {
-            id: 4,
-            img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-            title: "Creative Thinking",
-            date: "Sunday, December 5th at 6:00 pm",
-            desc: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam..."
+    const fetchPolls = async (pageNum) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`http://localhost:8080/api/poll/get-all-without-candidate?page=${pageNum}&size=6`);
+            if (!response.ok) throw new Error('Lỗi khi gọi API');
+            const data = await response.json();
+            setPolls(data.content);
+            setTotalPages(data.totalPages);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
-    ];
+    };
+
+    useEffect(() => {
+        fetchPolls(page);
+    }, [page]);
+
+    const handleNext = () => {
+        if (page < totalPages - 1) setPage(page + 1);
+    };
+
+    const handlePrev = () => {
+        if (page > 0) setPage(page - 1);
+    };
+
+    const getStatusText = (startTime, endTime) => {
+        const now = new Date();
+        const start = new Date(startTime);
+        const end = new Date(endTime);
+
+        if (now < start) return 'Chưa diễn ra';
+        if (now >= start && now <= end) return 'Đang diễn ra';
+        return 'Đã kết thúc';
+    };
 
     return (
         <Container className="py-5">
             <h2 className="mb-4">Danh sách cuộc bình chọn</h2>
-            <Row className="gy-4">
-                {mockData.map((poll) => (
-                    <Col key={poll.id} lg={4} md={6}>
-                        <PollCard
-                            {...poll}
-                            onClick={() => navigate(`/poll-detail/${poll.id}`)}
-                        />
-                    </Col>
-                ))}
-            </Row>
+            {loading ? (
+                <div className="text-center">
+                    <Spinner animation="border" variant="primary" />
+                </div>
+            ) : error ? (
+                <Alert variant="danger">Lỗi: {error}</Alert>
+            ) : (
+                <>
+                    <Row className="gy-4">
+                        {polls.map((poll) => {
+                            const status = getStatusText(poll.startTime, poll.endTime);
+                            return (
+                                <Col key={poll.id} lg={4} md={6}>
+                                    <PollCard
+                                        id={poll.id}
+                                        img={poll.urlImage}
+                                        title={poll.title}
+
+                                        desc={poll.description}
+                                        status={status} // Nếu cần truyền vào trong PollCard
+                                        onClick={() => navigate(`/poll-detail/${poll.id}`)}
+                                    />
+                                </Col>
+                            );
+                        })}
+                    </Row>
+                    <div className="d-flex justify-content-between mt-4">
+                        <Button onClick={handlePrev} disabled={page === 0}>
+                            Trang trước
+                        </Button>
+                        <span>Trang {page + 1} / {totalPages}</span>
+                        <Button onClick={handleNext} disabled={page >= totalPages - 1}>
+                            Trang sau
+                        </Button>
+                    </div>
+                </>
+            )}
         </Container>
     );
 };

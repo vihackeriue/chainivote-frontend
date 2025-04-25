@@ -1,11 +1,13 @@
-import { Contract } from 'ethers';
+import { Contract, keccak256, toUtf8Bytes } from 'ethers';
 import { BrowserProvider } from 'ethers';
 import React, { useState } from 'react';
 import { Form, Button, Col, Row, ProgressBar, Image } from 'react-bootstrap';
 import { contractAbi, contractAddress } from '../../../constrants/constrant';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { getWalletAddress } from '../../../utils/jwt';
 
-const AddPollPage = () => {
+const PollAddPage = () => {
     const [step, setStep] = useState(1);
     const initialState = {
         title: '',
@@ -93,16 +95,18 @@ const AddPollPage = () => {
     };
 
     const uploadFileToLocalIPFS = async (file) => {
+        console.log(" Đang submit...uploadFileToLocalIPFS");
         const formData = new FormData();
         formData.append('file', file);
 
-        const res = await fetch('http://localhost:5001/api/v0/add', {
+        const res = await fetch('http://localhost:5002/api/v0/add', {
             method: 'POST',
             body: formData
         });
         const data = await res.text();
         const cid = data.match(/Hash":\s*"(.*?)"/)[1];
-        return `http://localhost:8080/ipfs/${cid}`;
+        console.log("uploadFileToLocalIPFS thành công: http://localhost:8082/ipfs/" + cid);
+        return `http://localhost:8082/ipfs/${cid}`;
     };
 
     const uploadJSONToLocalIPFS = async (obj) => {
@@ -113,14 +117,31 @@ const AddPollPage = () => {
 
     const handleSubmit = async () => {
         try {
-            // Kết nối Metamask & smart contract
+            // Kết nối Metamask & Smart Contract
             const provider = new BrowserProvider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
             const signer = await provider.getSigner();
             const contract = new Contract(contractAddress, contractAbi, signer);
+            const address = await signer.getAddress();
 
-            // Upload hình ảnh chính của cuộc bình chọn lên IPFS
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Không tìm thấy token đăng nhập. Vui lòng đăng nhập lại.");
+            }
+            const walletInToken = getWalletAddress();
+            const walletInMetamask = address.toLowerCase();
+
+            if (walletInToken === "") {
+
+                throw new Error("Bạn chưa kết nối tài khoản với ví");
+            }
+            if (walletInToken.toLowerCase() !== walletInMetamask) {
+
+                throw new Error("Vui lòng đổi ví Metamask khớp với ví đã đăng ký!");
+            }
+            // Upload hình ảnh chính lên IPFS
             const pollImageUrl = await uploadFileToLocalIPFS(poll.image);
+
             // Upload ảnh từng ứng viên lên IPFS
             const candidateWithUrls = await Promise.all(
                 poll.candidates.map(async (c) => ({
@@ -128,75 +149,87 @@ const AddPollPage = () => {
                     image: await uploadFileToLocalIPFS(c.image)
                 }))
             );
-            // Tạo file JSON chứa thông tin poll & ứng viên
-            const address = await signer.getAddress();
+
+            // Tạo dữ liệu poll để upload lên IPFS
+
             const pollDataWithUrls = {
                 title: poll.title,
                 description: poll.description,
                 image: pollImageUrl,
                 creator: address
             };
-            // upload lên IPFS
-            const pollCIDUrl = await uploadJSONToLocalIPFS(pollDataWithUrls);
-            // Tạo cuộc bình chọn trên blockchain
-            const tx1 = await contract.createPoll(Number(poll.maxVotesPerVoter), pollCIDUrl);
-            await tx1.wait();
-            const nextPollId = await contract.nextPollId();
-            // Lấy ID lưu vào database
-            const pollId = Number(nextPollId) - 1;
 
-            // Upload từng ứng viên lên IPFS
+            // Upload dữ liệu poll lên IPFS
+            const pollCIDUrl = await uploadJSONToLocalIPFS(pollDataWithUrls);
+
+            // 🔥 Tạo pollId duy nhất bằng keccak256 (hash UUID)
+            const pollId = keccak256(toUtf8Bytes(crypto.randomUUID()));
+
+            console.log("🛠 Tạo cuộc bình chọn trên blockchain...");
+            const tx1 = await contract.createPoll(pollId, Number(poll.maxVotesPerVoter), pollCIDUrl);
+            await tx1.wait();
+
+            console.log("📁 Upload ứng viên lên IPFS...");
             const candidateCIDs = await Promise.all(
                 candidateWithUrls.map((c) => uploadJSONToLocalIPFS(c))
             );
-            // lưu candidate lên blockchain
-            const tx2 = await contract.addCandidatesToPoll(pollId, candidateCIDs);
+
+            // 🔥 Tạo candidateId duy nhất cho từng ứng viên
+            const candidateIds = candidateCIDs.map(() => keccak256(toUtf8Bytes(crypto.randomUUID())));
+
+            console.log(" Thêm ứng viên vào blockchain...");
+            const tx2 = await contract.addCandidatesToPoll(pollId, candidateIds, candidateCIDs);
             await tx2.wait();
-            //  Tính ID của từng ứng viên
-            const nextCandidateIdBefore = await contract.nextCandidateId();
-            const candidateIds = candidateCIDs.map((_, i) => Number(nextCandidateIdBefore) + i);
-
-
-            // Lưu toàn bộ thông tin poll & candidates vào database
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:8080/api/polls", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({
+            console.log("✅ Blockchain hoàn tất");
+            // Gọi API lưu vào database
+            const startDate_new = poll.startDate + ":00";
+            const endDate_new = poll.endDate + ":00";
+            const response = await axios.post(
+                "http://localhost:8080/api/poll/create-poll",
+                {
                     title: poll.title,
                     description: poll.description,
-                    startDate: poll.startDate,
-                    endDate: poll.endDate,
+                    startTime: startDate_new,
+                    endTime: endDate_new,
                     status: poll.status,
-                    image: pollImageUrl,
-                    pollId,
-                    txHash: tx1.hash,
+                    urlImage: pollImageUrl,
+                    chainId: pollId,
+                    creatorId: 1, // cân nhắc xử lý động
                     candidates: candidateWithUrls.map((c, i) => ({
-                        ...c,
-                        candidateId: candidateIds[i],
-                        cid: candidateCIDs[i]
+                        name: c.name,
+                        description: c.description,
+                        urlImage: c.image,
+                        chainId: candidateIds[i],
                     }))
-                })
-            });
-
-            const result = await response.json();
-            console.log("✅ Lưu DB thành công:", result);
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+            console.log("✅ Lưu DB thành công:", response.data);
             alert("🎉 Tạo cuộc bình chọn thành công!");
             setPoll(initialState);
             setStep(1);
-            navigate('/poll-list');
+            navigate('/manager/poll-list');
+
         } catch (err) {
             console.error("Lỗi khi tạo cuộc bình chọn:", err);
-            alert("Đã có lỗi xảy ra!");
+
+            if (err.response) {
+                console.error("Chi tiết lỗi:", err.response.data);
+                alert(`Lỗi từ server: ${JSON.stringify(err.response.data)}`);
+            } else {
+                alert(err.message || "Đã xảy ra lỗi khi tạo cuộc bình chọn!");
+            }
         }
     };
 
 
     return (
-        <div className="mt-4 mx-auto px-3" style={{ maxWidth: '1200px', height: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+        <div className="mt-4 mx-auto px-3">
 
             <ProgressBar
                 now={(step / 3) * 100}
@@ -265,7 +298,7 @@ const AddPollPage = () => {
                     <Form.Group className="mb-3">
                         <Form.Label>Hình ảnh</Form.Label>
                         <Form.Control size="sm" type="file" onChange={handleImageChange} isInvalid={!!errors.image} />
-                        {poll.image && <Image src={poll.image} height={60} className="mt-2" rounded />}
+                        {poll.image?.preview && <Image src={poll.image.preview} height={60} className="mt-2" rounded />}
                         <Form.Control.Feedback type="invalid">{errors.image}</Form.Control.Feedback>
                     </Form.Group>
                     <div className="text-end">
@@ -315,7 +348,7 @@ const AddPollPage = () => {
                             <Form.Group className="mb-2">
                                 <Form.Label>Ảnh ứng viên</Form.Label>
                                 <Form.Control size="sm" type="file" onChange={(e) => handleCandidateImageChange(index, e.target.files[0])} isInvalid={!!errors[`img${index}`]} />
-                                {candidate.image && <Image src={candidate.image} height={60} className="mt-2" rounded />}
+                                {candidate.image?.preview && <Image src={candidate.image.preview} height={40} rounded />}
                                 <Form.Control.Feedback type="invalid">{errors[`img${index}`]}</Form.Control.Feedback>
                             </Form.Group>
                         </div>
@@ -351,7 +384,7 @@ const AddPollPage = () => {
                         <Form.Label>Trạng thái</Form.Label>
                         <Form.Control size="sm" type="text" value={poll.status} readOnly />
                     </Form.Group>
-                    {poll.image && <Image src={poll.image} height={80} rounded className="mb-3 d-block" />}
+                    {poll.image?.preview && <Image src={poll.image.preview} height={60} className="mt-2" rounded />}
 
                     <h5 className="mt-3">Danh sách ứng viên:</h5>
                     <div className="table-responsive">
@@ -370,7 +403,7 @@ const AddPollPage = () => {
                                         <td>{i + 1}</td>
                                         <td>{c.name}</td>
                                         <td>{c.description}</td>
-                                        <td>{c.image && <Image src={c.image} height={40} rounded />} </td>
+                                        <td>{c.image?.preview && <Image src={c.image.preview} height={40} rounded />} </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -387,4 +420,4 @@ const AddPollPage = () => {
     );
 };
 
-export default AddPollPage;
+export default PollAddPage;
