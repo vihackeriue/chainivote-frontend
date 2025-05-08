@@ -165,7 +165,7 @@ const PollAddPage = () => {
             // 🔥 Tạo pollId duy nhất bằng keccak256 (hash UUID)
             const pollId = keccak256(toUtf8Bytes(crypto.randomUUID()));
 
-            console.log("🛠 Tạo cuộc bình chọn trên blockchain...");
+            console.log("🛠 Tạo cuộc bình chọn trên blockchain... maxVotesPerVoter", poll.maxVotesPerVoter);
             const tx1 = await contract.createPoll(pollId, Number(poll.maxVotesPerVoter), pollCIDUrl);
             await tx1.wait();
 
@@ -191,6 +191,7 @@ const PollAddPage = () => {
                     description: poll.description,
                     startTime: startDate_new,
                     endTime: endDate_new,
+                    categoryId: 1,
                     status: poll.status,
                     urlImage: pollImageUrl,
                     chainId: pollId,

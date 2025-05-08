@@ -1,4 +1,4 @@
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const contractAddress = "0xD88B3FE07A537fD6D8309aA101b5089a1d0533Cd";
 const contractAbi = [
     {
         "inputs": [],
@@ -10,15 +10,15 @@ const contractAbi = [
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "pollId",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
                 "indexed": false,
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "candidateId",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "CandidateAdded",
@@ -29,9 +29,9 @@ const contractAbi = [
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "pollId",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "PollCreated",
@@ -40,14 +40,14 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_pollId",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
-                "internalType": "uint256[]",
+                "internalType": "bytes32[]",
                 "name": "_candidateIds",
-                "type": "uint256[]"
+                "type": "bytes32[]"
             },
             {
                 "internalType": "string[]",
@@ -63,17 +63,17 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "candidates",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "id",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
                 "internalType": "string",
@@ -92,9 +92,9 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_pollId",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
                 "internalType": "uint256",
@@ -115,9 +115,9 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_pollId",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "getAllCandidatesInPoll",
@@ -125,9 +125,9 @@ const contractAbi = [
             {
                 "components": [
                     {
-                        "internalType": "uint256",
+                        "internalType": "bytes32",
                         "name": "id",
-                        "type": "uint256"
+                        "type": "bytes32"
                     },
                     {
                         "internalType": "string",
@@ -149,24 +149,11 @@ const contractAbi = [
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "getAllPolls",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_candidateId",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "getCandidateVotes",
@@ -183,17 +170,17 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_pollId",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "getPollCandidates",
         "outputs": [
             {
-                "internalType": "uint256[]",
+                "internalType": "bytes32[]",
                 "name": "",
-                "type": "uint256[]"
+                "type": "bytes32[]"
             }
         ],
         "stateMutability": "view",
@@ -202,17 +189,17 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_pollId",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "getPollResult",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "winnerId",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
                 "internalType": "uint256",
@@ -225,9 +212,9 @@ const contractAbi = [
                 "type": "uint256"
             },
             {
-                "internalType": "uint256[]",
+                "internalType": "bytes32[]",
                 "name": "candidateIds",
-                "type": "uint256[]"
+                "type": "bytes32[]"
             },
             {
                 "internalType": "uint256[]",
@@ -241,9 +228,9 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_pollId",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
                 "internalType": "address",
@@ -265,14 +252,14 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "isCandidateInPoll",
@@ -301,19 +288,6 @@ const contractAbi = [
     },
     {
         "inputs": [],
-        "name": "nextPollId",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "owner",
         "outputs": [
             {
@@ -328,17 +302,17 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "",
-                "type": "uint256"
+                "type": "bytes32"
             }
         ],
         "name": "polls",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "id",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
                 "internalType": "uint256",
@@ -362,14 +336,14 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_pollId",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "_candidateId",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
                 "internalType": "uint256",
@@ -385,9 +359,9 @@ const contractAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bytes32",
                 "name": "",
-                "type": "uint256"
+                "type": "bytes32"
             },
             {
                 "internalType": "address",

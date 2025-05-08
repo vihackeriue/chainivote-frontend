@@ -47,7 +47,7 @@ const LoginPage = () => {
                     {/* Cột trái: Form đăng nhập */}
                     <Col md={4} className="bg-white p-5 d-flex flex-column justify-content-center">
                         <div className="text-start mb-4">
-                            <img src="/logo.png" alt="Logo" style={{ height: 30 }} className="mb-3" />
+                            {/* <img src="/logo.png" alt="Logo" style={{ height: 30 }} className="mb-3" /> */}
                             <h4 className="fw-bold">ĐĂNG NHẬP</h4>
                             <p className="text-muted mb-4">
                                 Nhập tên đăng nhập và mật khẩu để vào hệ thống
@@ -79,13 +79,13 @@ const LoginPage = () => {
 
                             <Form.Check className="mb-3" type="checkbox" label="Remember me" />
 
-                            <Button variant="primary" type="submit" className="w-100">
-                                <i className="bi bi-box-arrow-in-right me-2"></i> Log In
+                            <Button variant="success" type="submit" className="w-100">
+                                <i className="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
                             </Button>
                         </Form>
 
                         <div className="text-center mt-4">
-                            <p className="text-muted mb-2">Sign in with</p>
+                            <p className="text-muted mb-2">Đăng nhập với</p>
                             <div className="d-flex justify-content-center gap-3">
                                 <i className="bi bi-google fs-4 text-danger"></i>
                                 <i className="bi bi-facebook fs-4 text-primary"></i>

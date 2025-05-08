@@ -51,16 +51,15 @@ const AdminPollListPage = () => {
     };
 
     const stats = [
-        { icon: <BsBarChart size={24} />, value: 715, label: 'Tổng số cuộc bình chọn đã tạo', color: '#0d6efd' },
-        { icon: <BsClock size={24} />, value: 22, label: 'Sắp diễn ra', color: '#fd7e14' },
-        { icon: <BsPlayCircle size={24} />, value: 31, label: 'Đang diễn ra', color: '#198754' },
-        { icon: <BsCheckCircle size={24} />, value: 93, label: 'Đã kết thúc', color: '#6f42c1' }
+        { icon: <BsBarChart size={24} />, value: 5, label: 'Tổng số cuộc bình chọn đã tạo', color: '#0d6efd' },
+        { icon: <BsClock size={24} />, value: 1, label: 'Sắp diễn ra', color: '#fd7e14' },
+        { icon: <BsPlayCircle size={24} />, value: 3, label: 'Đang diễn ra', color: '#198754' },
+        { icon: <BsCheckCircle size={24} />, value: 1, label: 'Đã kết thúc', color: '#6f42c1' }
     ];
 
 
     return (
         <>
-
             <Container className="py-5" >
                 <section className="py-4 bg-light">
                     <Container>

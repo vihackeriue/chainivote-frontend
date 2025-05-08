@@ -43,7 +43,7 @@ const Header = () => {
                     <Nav className="mx-auto gap-4">
                         <NavLink to="/" className={({ isActive }) => isActive ? "nav-link text-success fw-semibold" : "nav-link text-dark"}>Trang chủ</NavLink>
                         <NavLink to="/poll-list" className={({ isActive }) => isActive ? "nav-link text-success fw-semibold" : "nav-link text-dark"}>Cuộc bình chọn</NavLink>
-                        <NavLink to="/" className={({ isActive }) => isActive ? "nav-link text-success fw-semibold" : "nav-link text-dark"}>Lịch sử</NavLink>
+                        <NavLink to="/history" className={({ isActive }) => isActive ? "nav-link text-success fw-semibold" : "nav-link text-dark"}>Lịch sử</NavLink>
                         <NavLink to="/trainers" className={({ isActive }) => isActive ? "nav-link text-success fw-semibold" : "nav-link text-dark"}>Nhóm</NavLink>
                         <NavLink to="/contact" className={({ isActive }) => isActive ? "nav-link text-success fw-semibold" : "nav-link text-dark"}>Liên hệ</NavLink>
                     </Nav>

@@ -1,41 +1,47 @@
-import { memo } from 'react';
-import { Button, Container, Row, Col, ListGroup } from 'react-bootstrap'; // Make sure to import Row and Col
+import { memo, useEffect, useState } from 'react';
+import { Container, Row, Col } from 'react-bootstrap'; // Make sure to import Row and Col
 import './style.css';
 import PollListSections from '../../../components/pollListSections';
 import Slider from 'react-slick';
 import CandidateSection from '../../../components/CandidateSection';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import PollCard from '../../../components/card/PollCard';
 
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const [polls, setPolls] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPolls = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('http://localhost:8080/api/poll/get-all-without-candidate');
+        if (!response.ok) throw new Error('Lỗi khi gọi API');
+        const data = await response.json();
+        setPolls(data.content);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPolls();
+  }, []);
 
 
-  const mockData = [
-    {
-      img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-      title: "Introduction to Web Design",
-      date: "Sunday, September 26th at 7:00 pm",
-      desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    },
-    {
-      img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
-      title: "Marketing Strategies",
-      date: "Sunday, November 15th at 7:00 pm",
-      desc: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium..."
-    },
-    {
-      img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-      title: "Creative Thinking",
-      date: "Sunday, December 5th at 6:00 pm",
-      desc: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam..."
-    },
-    {
-      img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-      title: "Creative Thinking",
-      date: "Sunday, December 5th at 6:00 pm",
-      desc: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam..."
-    }
-  ];
+  const getStatusText = (startTime, endTime) => {
+    const now = new Date();
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (now < start) return 'Chưa diễn ra';
+    if (now >= start && now <= end) return 'Đang diễn ra';
+    return 'Đã kết thúc';
+  };
 
   const sliderSettings = {
     dots: true,
@@ -51,18 +57,15 @@ const HomePage = () => {
     ]
   };
 
-
-  console.log('HomePage Rendered');
   return (
     <>
       <section id="hero" className="hero d-flex align-items-center">
         <div className="container text-center">
           <h1 className="fw-bold mb-3" data-aos="fade-up" data-aos-delay="100">
-            Learning Today,<br />
-            Leading Tomorrow
+            Voting App<br />
           </h1>
           <p className="lead mb-4" data-aos="fade-up" data-aos-delay="200">
-            We are team of talented designers making websites with Bootstrap
+            “Hệ thống Bình chọn minh bạch”
           </p>
 
         </div>
@@ -120,26 +123,21 @@ const HomePage = () => {
       <Container className="py-5">
         <h2 className="text-center mb-4"><b>Các Cuộc Bình Chọn Nổi Bật</b></h2>
         <Slider {...sliderSettings}>
-          {mockData.map((item, idx) => (
-            <div key={idx} className="px-3">
-              <div className="shadow rounded overflow-hidden bg-white h-100">
-                <div style={{ height: '250px', overflow: 'hidden' }}>
-                  <img src={item.img} alt={item.title} className="w-100 object-cover" />
-                </div>
-                <div className="p-3">
-                  <h5 className="fw-bold">{item.title}</h5>
-                  <p className="text-muted fst-italic">{item.date}</p>
-                  <p className="text-muted" style={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical'
-                  }}>{item.desc}</p>
-                </div>
+          {polls.map((poll) => {
+            const status = getStatusText(poll.startTime, poll.endTime);
+            return (
+              <div key={poll.id} className="px-3">
+                <PollCard
+                  id={poll.id}
+                  img={poll.urlImage}
+                  title={poll.title}
+                  desc={poll.description}
+                  status={status}
+                  onClick={() => navigate(`/poll-detail/${poll.id}`)}
+                />
               </div>
-            </div>
-          ))}
+            );
+          })}
         </Slider>
       </Container>
       <div className="text-center py-5">
