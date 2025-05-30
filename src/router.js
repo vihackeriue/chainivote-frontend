@@ -13,6 +13,7 @@ import UserPollListPage from "./pages/users/pollListPage";
 import PollAddPage from "./pages/admin/pollAddPage";
 import AdminPollListPage from "./pages/admin/PollListPage";
 import AdminPollDetailPage from "./pages/admin/pollDetailPage";
+import UserManagementPage from "./pages/admin/userManagementPage";
 
 
 const renderUserRouter = () => {
@@ -56,6 +57,11 @@ const renderUserRouter = () => {
         {
             path: ROUTERS.ADMIN.HOME,
             component: <AdminHomePage />,
+            role: "ADMIN"
+        },
+        {
+            path: ROUTERS.ADMIN.USERLIST,
+            component: <UserManagementPage />,
             role: "ADMIN"
         },
 

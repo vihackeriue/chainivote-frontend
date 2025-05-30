@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { Form, Button, Col, Row, ProgressBar, Image } from 'react-bootstrap';
 import { contractAbi, contractAddress } from '../../../constrants/constrant';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
 import { getWalletAddress } from '../../../utils/jwt';
+import request from '../../../utils/request';
 
 const PollAddPage = () => {
     const [step, setStep] = useState(1);
@@ -184,8 +185,8 @@ const PollAddPage = () => {
             // Gọi API lưu vào database
             const startDate_new = poll.startDate + ":00";
             const endDate_new = poll.endDate + ":00";
-            const response = await axios.post(
-                "http://localhost:8080/api/poll/create-poll",
+            const response = await request.post(
+                "/poll/create-poll",
                 {
                     title: poll.title,
                     description: poll.description,

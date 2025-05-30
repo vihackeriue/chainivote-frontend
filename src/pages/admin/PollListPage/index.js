@@ -3,6 +3,7 @@ import { Container, Row, Col, Button, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import PollCard from '../../../components/card/PollCard';
 import { BsBarChart, BsClock, BsPlayCircle, BsCheckCircle } from 'react-icons/bs';
+import request from '../../../utils/request';
 
 
 const AdminPollListPage = () => {
@@ -15,14 +16,21 @@ const AdminPollListPage = () => {
 
     const fetchPolls = async (pageNum) => {
         setLoading(true);
+        setError(null);
         try {
-            const response = await fetch(`http://localhost:8080/api/poll/get-all-without-candidate?page=${pageNum}&size=6`);
-            if (!response.ok) throw new Error('Lỗi khi gọi API');
-            const data = await response.json();
+            const response = await request.get('/poll/get-all-without-candidate', {
+                params: {
+                    page: pageNum,
+                    size: 6,
+                },
+            });
+            const data = response.data;
+
             setPolls(data.content);
-            setTotalPages(data.totalPages);
+            setTotalPages(data.page.totalPages);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || err.message || 'Lỗi khi gọi API');
+            setPolls([]);
         } finally {
             setLoading(false);
         }

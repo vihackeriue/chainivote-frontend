@@ -8,6 +8,7 @@ import { Bar } from 'react-chartjs-2';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { BrowserProvider } from 'ethers';
 import { Contract } from 'ethers';
+import request from '../../../utils/request';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -33,13 +34,13 @@ const AdminPollDetailPage = () => {
     };
 
     const fetchPoll = async () => {
+        setLoading(true);
+        setError(null);
         try {
-            const res = await fetch(`http://localhost:8080/api/poll/${id}`);
-            if (!res.ok) throw new Error('Không thể lấy dữ liệu');
-            const data = await res.json();
-            setPoll(data);
+            const res = await request.get(`/poll/${id}`);
+            setPoll(res.data);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || err.message || 'Không thể lấy dữ liệu');
         } finally {
             setLoading(false);
         }

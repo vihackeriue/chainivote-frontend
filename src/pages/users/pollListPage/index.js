@@ -2,6 +2,7 @@ import React, { memo, useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import PollCard from '../../../components/card/PollCard';
+import request from '../../../utils/request';
 
 
 const PollListPage = () => {
@@ -14,14 +15,24 @@ const PollListPage = () => {
 
     const fetchPolls = async (pageNum) => {
         setLoading(true);
+        setError(null);
         try {
-            const response = await fetch(`http://localhost:8080/api/poll/get-all-without-candidate?page=${pageNum}&size=6`);
-            if (!response.ok) throw new Error('Lỗi khi gọi API');
-            const data = await response.json();
+            const response = await request.get('/poll/get-all-without-candidate', {
+                params: {
+                    page: pageNum,
+                    size: 6,
+                },
+            });
+
+            // Giả sử cấu trúc data từ axios là response.data
+            const data = response.data;
+
             setPolls(data.content);
-            setTotalPages(data.totalPages);
+            // Nếu data.page.totalPages đúng như backend trả về
+            setTotalPages(data.page.totalPages);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || err.message || 'Lỗi khi gọi API');
+            setPolls([]);
         } finally {
             setLoading(false);
         }

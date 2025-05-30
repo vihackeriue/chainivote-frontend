@@ -5,6 +5,7 @@ import './style.css';
 import { BrowserProvider, Contract, zeroPadValue } from 'ethers';
 import { contractAbi, contractAddress } from '../../../constrants/constrant';
 import { getWalletAddress } from '../../../utils/jwt';
+import request from '../../../utils/request';
 
 const PollDetailPage = () => {
     const { id } = useParams();
@@ -62,10 +63,11 @@ const PollDetailPage = () => {
 
     useEffect(() => {
         const fetchPoll = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                const res = await fetch(`http://localhost:8080/api/poll/${id}`);
-                if (!res.ok) throw new Error('Không thể lấy dữ liệu');
-                const data = await res.json();
+                const res = await request.get(`/poll/${id}`);
+                const data = res.data;
                 setPoll(data);
 
                 // Kiểm tra nếu cuộc bình chọn đã kết thúc
@@ -73,10 +75,10 @@ const PollDetailPage = () => {
                 const pollEndTime = new Date(data.endTime);
                 const pollStartTime = new Date(data.startTime);
 
-                setIsPollEnded(currentTime > pollEndTime); // Nếu thời gian hiện tại lớn hơn thời gian kết thúc thì poll đã kết thúc
-                setIsPollStarted(currentTime >= pollStartTime); // Kiểm tra nếu hiện tại là sau thời gian bắt đầu
+                setIsPollEnded(currentTime > pollEndTime);
+                setIsPollStarted(currentTime >= pollStartTime);
             } catch (err) {
-                setError(err.message);
+                setError(err.response?.data?.message || err.message || 'Không thể lấy dữ liệu');
             } finally {
                 setLoading(false);
             }

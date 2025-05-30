@@ -12,6 +12,7 @@ export const ROUTERS = {
         POLLADD: "manager/poll-add",
         POLLLIST: "manager/poll-list",
         POLLDETAIL: "manager/poll-detail/:id",
+        USERLIST: "manager/user-list",
     },
     AUTH: {
         LOGIN: "login",

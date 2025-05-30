@@ -6,6 +6,7 @@ import Slider from 'react-slick';
 import CandidateSection from '../../../components/CandidateSection';
 import { Link, useNavigate } from 'react-router-dom';
 import PollCard from '../../../components/card/PollCard';
+import request from '../../../utils/request';
 
 
 const HomePage = () => {
@@ -17,13 +18,12 @@ const HomePage = () => {
   useEffect(() => {
     const fetchPolls = async () => {
       setLoading(true);
+      setError(null);
       try {
-        const response = await fetch('http://localhost:8080/api/poll/get-all-without-candidate');
-        if (!response.ok) throw new Error('Lỗi khi gọi API');
-        const data = await response.json();
-        setPolls(data.content);
+        const response = await request.get('/poll/get-all-without-candidate');
+        setPolls(response.data.content);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || err.message || 'Lỗi khi gọi API');
       } finally {
         setLoading(false);
       }
